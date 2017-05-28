@@ -21,7 +21,7 @@ func reader(c net.Conn, w http.ResponseWriter) {
 		return
 	}
 	println("Client got:", string(buf[0:n]))
-	io.WriteString(w, "Read: "+string(buf[0:n]))
+	io.WriteString(w, string(buf[0:n]))
 	return
 }
 

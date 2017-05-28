@@ -1,0 +1,4 @@
+package: github.com/xocasdasdash/go-php-pm
+import:
+- package: github.com/gorilla/mux
+  version: 043ee6597c29786140136a5747b6a886364f5282

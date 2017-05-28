@@ -18,52 +18,22 @@ BUILD_DIR_LINK=$(shell readlink ${BUILD_DIR})
 LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.COMMIT=${COMMIT} -X main.BRANCH=${BRANCH}"
 
 # Build the project
-all: link clean  vet linux darwin windows
-
-link:
-	BUILD_DIR=${BUILD_DIR}; \
-	BUILD_DIR_LINK=${BUILD_DIR_LINK}; \
-	CURRENT_DIR=${CURRENT_DIR}; \
-	if [ "$${BUILD_DIR_LINK}" != "$${CURRENT_DIR}" ]; then \
-	    echo "Fixing symlinks for build"; \
-	    rm -f $${BUILD_DIR}; \
-	    ln -s $${CURRENT_DIR} $${BUILD_DIR}; \
-	fi
+all: clean linux darwin windows
 
 linux: 
-	cd ${BUILD_DIR}; \
-	GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o builds/${BINARY}-linux-${GOARCH} . ; \
-	cd - >/dev/null
+#	cd ${BUILD_DIR}; 
+	GOOS=linux GOARCH=${GOARCH} go build ${LDFLAGS} -o builds/${BINARY}-linux-${GOARCH} . ; 
+#	cd - >/dev/null
 
 darwin:
-	cd ${BUILD_DIR}; \
-	GOOS=darwin GOARCH=${GOARCH} go build ${LDFLAGS} -o builds/${BINARY}-darwin-${GOARCH} . ; \
-	cd - >/dev/null
-
+	GOOS=darwin GOARCH=${GOARCH} go build ${LDFLAGS} -o builds/${BINARY}-darwin-${GOARCH} . ;
+	
 windows:
-	cd ${BUILD_DIR}; \
-	GOOS=windows GOARCH=${GOARCH} go build ${LDFLAGS} -o builds/${BINARY}-windows-${GOARCH}.exe . ; \
-	cd - >/dev/null
-
-test:
-	if ! hash go2xunit 2>/dev/null; then go install github.com/tebeka/go2xunit; fi
-	cd ${BUILD_DIR}; \
-	godep go test -v ./... 2>&1 | go2xunit -output ${TEST_REPORT} ; \
-	cd - >/dev/null
-
-vet:
-	-cd ${BUILD_DIR}; \
-	godep go vet ./... > ${VET_REPORT} 2>&1 ; \
-	cd - >/dev/null
-
-fmt:
-	cd ${BUILD_DIR}; \
-	go fmt $$(go list ./... | grep -v /vendor/) ; \
-	cd - >/dev/null
-
+	GOOS=windows GOARCH=${GOARCH} go build ${LDFLAGS} -o builds/${BINARY}-windows-${GOARCH}.exe . ;
+	
 clean:
-	-rm -f ${TEST_REPORT}
-	-rm -f ${VET_REPORT}
-	-rm -f ${BINARY}-*
+	@-rm -f ${TEST_REPORT}
+	@-rm -f ${VET_REPORT}
+	@-rm -f ${BINARY}-*
 
 .PHONY: link linux darwin windows test vet fmt clean
